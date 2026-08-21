@@ -2,6 +2,7 @@ use crate::components::ListTransferProcesses;
 use crate::contexts::use_edc_connector_context;
 use crate::models::TransferProcessItem;
 use edc_connector_client::{EdcConnectorApiVersion, types::query::Query};
+use edc_connector_client::types::query::SortOrder;
 use patternfly_yew::prelude::*;
 use yew::prelude::*;
 use yew::suspense::use_future_with;
@@ -74,6 +75,7 @@ pub fn TransferProcessPageInner(props: &TransferProcessPageInnerProps) -> HtmlRe
       let query = Query::builder()
         .limit(limit as u32)
         .offset(offset as u32)
+        .sort("createdAt", SortOrder::Desc)
         .build();
 
       if let Some(client) = edc_connector_context.get_client() {

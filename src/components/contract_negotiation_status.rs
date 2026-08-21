@@ -14,8 +14,13 @@ const HAPPY_PATH_STATES: [(&str, ContractNegotiationState); 7] = [
   ("Offered", ContractNegotiationState::Offered),
   ("Accepted", ContractNegotiationState::Accepted),
   ("Agreed", ContractNegotiationState::Agreed),
-  ("Verifier", ContractNegotiationState::Verified),
+  ("Verified", ContractNegotiationState::Verified),
   ("Finalized", ContractNegotiationState::Finalized),
+];
+
+const BAD_PATH_STATES: [(&str, ContractNegotiationState); 2] = [
+  ("Initial", ContractNegotiationState::Initial),
+  ("Terminated", ContractNegotiationState::Terminated),
 ];
 
 #[derive(Clone, Debug, PartialEq, Properties)]
@@ -66,7 +71,7 @@ pub fn ContractNegotiationStatus(props: &ContractNegotiationStatusProps) -> Html
 
           contract_negotiation_state_setter.set(contract_negotiation);
 
-          if state == Some(ContractNegotiationState::Finalized) {
+          if state == Some(ContractNegotiationState::Finalized) || state == Some(ContractNegotiationState::Terminated) {
             on_finalized.emit(());
             break;
           }
@@ -80,35 +85,59 @@ pub fn ContractNegotiationStatus(props: &ContractNegotiationStatusProps) -> Html
   if let Some(contract_negotiation) = (*contract_negotiation_state).clone() {
     let contract_negotiation: ContractNegotiation = contract_negotiation;
 
-    let current_state_index = HAPPY_PATH_STATES
-      .iter()
-      .position(|(_, state)| state == contract_negotiation.state())
-      .unwrap_or_default();
+    let is_terminated = ContractNegotiationState::Terminated == *contract_negotiation.state();
 
-    let steps = HAPPY_PATH_STATES
-      .iter()
-      .enumerate()
-      .map(|(index, (state_label, _))| {
-        let status = if index < current_state_index {
-          ProgressStepperStepStatus::Success
-        } else if index == current_state_index {
-          if index == HAPPY_PATH_STATES.len() - 1 {
-            ProgressStepperStepStatus::Success
+    if is_terminated {
+      let steps = BAD_PATH_STATES
+        .iter()
+        .enumerate()
+        .map(|(index, (state_label, _))| {
+          let status = if index == BAD_PATH_STATES.len() - 1 {
+            ProgressStepperStepStatus::Danger
           } else {
             ProgressStepperStepStatus::Default
-          }
-        } else {
-          ProgressStepperStepStatus::Pending
-        };
+          };
 
-        html_nested!(
-          <ProgressStepperStep {status}>
-            <div>{ state_label.to_string() }</div>
-          </ProgressStepperStep>
-        )
-      });
+          html_nested!(
+            <ProgressStepperStep {status}>
+              <div>{ state_label.to_string() }</div>
+            </ProgressStepperStep>
+          )
+        });
 
-    html!(<ProgressStepper>{ for steps }</ProgressStepper>)
+      html!(<ProgressStepper>{ for steps }</ProgressStepper>)
+
+    } else {
+      let current_state_index = HAPPY_PATH_STATES
+          .iter()
+          .position(|(_, state)| state == contract_negotiation.state())
+          .unwrap_or_default();
+
+      let steps = HAPPY_PATH_STATES
+          .iter()
+          .enumerate()
+          .map(|(index, (state_label, _))| {
+            let status = if index < current_state_index {
+              ProgressStepperStepStatus::Success
+            } else if index == current_state_index {
+              if index == HAPPY_PATH_STATES.len() - 1 {
+                ProgressStepperStepStatus::Success
+              } else {
+                ProgressStepperStepStatus::Default
+              }
+            } else {
+              ProgressStepperStepStatus::Pending
+            };
+
+            html_nested!(
+              <ProgressStepperStep {status}>
+                <div>{ state_label.to_string() }</div>
+              </ProgressStepperStep>
+            )
+          });
+
+      html!(<ProgressStepper>{ for steps }</ProgressStepper>)
+    }
   } else {
     html!()
   }

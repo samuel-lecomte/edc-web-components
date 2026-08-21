@@ -2,7 +2,7 @@ use crate::components::ListContractNegotiations;
 use crate::contexts::use_edc_connector_context;
 use crate::models::ContractNegotiationItem;
 use edc_connector_client::EdcConnectorApiVersion;
-use edc_connector_client::types::query::Query;
+use edc_connector_client::types::query::{Query, SortOrder};
 use patternfly_yew::prelude::*;
 use yew::prelude::*;
 use yew::suspense::use_future_with;
@@ -106,6 +106,7 @@ pub fn ContractNegotiationPageInner(props: &ContractNegotiationPageInnerProps) -
       let query = Query::builder()
         .limit(limit as u32)
         .offset(offset as u32)
+        .sort("createdAt", SortOrder::Desc)
         .filter(
           "type",
           "=",
