@@ -82,13 +82,30 @@ pub fn ShowContractNegotiationPageInner(props: &ShowContractNegotiationPageProps
   let contract_negotiation = (*contract_negotiation).clone();
 
   if let Some(contract_negotiation) = contract_negotiation {
+    let created_date = chrono::DateTime::from_timestamp_millis(contract_negotiation.created_at())
+      .unwrap_or_default()
+      .to_string();
+
     let contract_agreement = contract_negotiation
       .contract_agreement_id()
       .map(|contract_agreement_id| {
         html!(
-          <DescriptionGroup term="Contract Agreement">
-            <ContractAgreementReference contract_agreement_id={contract_agreement_id.clone()} />
-          </DescriptionGroup>
+          <Split gutter=true>
+            <SplitItem>
+              <yew_icons::Icon data={yew_icons::IconData::LUCIDE_HEART_HANDSHAKE} />
+            </SplitItem>
+            <SplitItem fill=true>
+              <DescriptionGroup term="Contract Agreement">
+                <div class="pf-v6-u-font-weight-bold">{ format!("Signed {}", &created_date) }</div>
+                <div class="pf-v6-u-font-family-monospace pf-v6-u-text-color-disabled">
+                  { contract_agreement_id.clone() }
+                </div>
+              </DescriptionGroup>
+            </SplitItem>
+            <SplitItem>
+              <ContractAgreementReference contract_agreement_id={contract_agreement_id.clone()} />
+            </SplitItem>
+          </Split>
         )
       })
       .unwrap_or_default();
@@ -135,26 +152,89 @@ pub fn ShowContractNegotiationPageInner(props: &ShowContractNegotiationPageProps
     Ok(html!(
       <Stack gutter=true>
         <StackItem>
-          <DescriptionList mode={[DescriptionListMode::Horizontal]}>
-            <DescriptionGroup term="Id">{ contract_negotiation.id() }</DescriptionGroup>
-            <DescriptionGroup term="Counter Party">
-              <DidLabel did={contract_negotiation.counter_party_id().clone().unwrap_or_default()} />
-            </DescriptionGroup>
-            <DescriptionGroup term="Asset">
-              <AssetReference
-                asset_id={contract_negotiation.asset_id().clone().unwrap_or_default()}
-              />
-            </DescriptionGroup>
-            { state }
-            <DescriptionGroup term="Kind">{ kind }</DescriptionGroup>
-            { contract_agreement }
-          </DescriptionList>
+          <Flex modifiers={[FlexModifier::Justify(Justify::Start)]}>
+            <FlexItem modifiers={[FlexModifier::Flex1, FlexModifier::Align(Alignment::Start)]}>
+              <div class="pf-v6-u-mb-md">
+                <Title level={Level::H4} size={Size::XLarge}>{ "Negotiation Properties" }</Title>
+              </div>
+              <Card>
+                <CardBody>
+                  <DescriptionList mode={[DescriptionListMode::Horizontal]}>
+                    <DescriptionGroup term="Id">
+                      <div class="pf-v6-u-font-family-monospace">{ contract_negotiation.id() }</div>
+                    </DescriptionGroup>
+                    { state }
+                    <DescriptionGroup term="Kind">{ kind }</DescriptionGroup>
+                    <DescriptionGroup term="Counter Party">
+                      <DidLabel
+                        did={contract_negotiation.counter_party_id().clone().unwrap_or_default()}
+                      />
+                    </DescriptionGroup>
+                    <DescriptionGroup term="Protocol">
+                      <Label label={contract_negotiation.protocol().to_string()} />
+                    </DescriptionGroup>
+                    <DescriptionGroup term="Created At">{ created_date }</DescriptionGroup>
+                  </DescriptionList>
+                </CardBody>
+              </Card>
+            </FlexItem>
+            <FlexItem modifiers={[FlexModifier::Flex1, FlexModifier::Align(Alignment::Start)]}>
+              <div class="pf-v6-u-mb-md">
+                <Title level={Level::H4} size={Size::XLarge}>{ "Outcome" }</Title>
+              </div>
+              <Card>
+                <CardBody>
+                  <Flex modifiers={[FlexModifier::Column.lg()]}>
+                    <FlexItem>
+                      <Card>
+                        <CardBody>
+                          <Split gutter=true>
+                            <SplitItem>
+                              <yew_icons::Icon data={yew_icons::IconData::LUCIDE_BOX} />
+                            </SplitItem>
+                            <SplitItem fill=true>
+                              <DescriptionGroup term="Asset">
+                                <AssetReference
+                                  asset_id={contract_negotiation.asset_id().clone().unwrap_or_default()}
+                                />
+                                <div
+                                  class="pf-v6-u-font-family-monospace pf-v6-u-text-color-disabled"
+                                >
+                                  { contract_negotiation.asset_id().clone().unwrap_or_default() }
+                                </div>
+                              </DescriptionGroup>
+                            </SplitItem>
+                          </Split>
+                        </CardBody>
+                      </Card>
+                    </FlexItem>
+                    <FlexItem>
+                      <Card>
+                        <CardBody>{ contract_agreement }</CardBody>
+                      </Card>
+                    </FlexItem>
+                  </Flex>
+                </CardBody>
+              </Card>
+            </FlexItem>
+          </Flex>
         </StackItem>
         <StackItem>
-          <ContractNegotiationStatus
-            contract_negotiation_id={props.contract_negotiation_id.clone()}
-            {on_finalized}
-          />
+          <Flex>
+            <FlexItem modifiers={[FlexModifier::Flex1, FlexModifier::Align(Alignment::Start)]}>
+              <div class="pf-v6-u-mb-md">
+                <Title level={Level::H4} size={Size::XLarge}>{ "Negotiation Process" }</Title>
+              </div>
+              <Card>
+                <CardBody>
+                  <ContractNegotiationStatus
+                    contract_negotiation_id={props.contract_negotiation_id.clone()}
+                    {on_finalized}
+                  />
+                </CardBody>
+              </Card>
+            </FlexItem>
+          </Flex>
         </StackItem>
         <StackItem>{ review }</StackItem>
       </Stack>
