@@ -90,22 +90,30 @@ pub fn ShowContractNegotiationPageInner(props: &ShowContractNegotiationPageProps
       .contract_agreement_id()
       .map(|contract_agreement_id| {
         html!(
-          <Split gutter=true>
-            <SplitItem>
-              <yew_icons::Icon data={yew_icons::IconData::LUCIDE_HEART_HANDSHAKE} />
-            </SplitItem>
-            <SplitItem fill=true>
-              <DescriptionGroup term="Contract Agreement">
-                <div class="pf-v6-u-font-weight-bold">{ format!("Signed {}", &created_date) }</div>
-                <div class="pf-v6-u-font-family-monospace pf-v6-u-text-color-disabled">
-                  { contract_agreement_id.clone() }
-                </div>
-              </DescriptionGroup>
-            </SplitItem>
-            <SplitItem>
-              <ContractAgreementReference contract_agreement_id={contract_agreement_id.clone()} />
-            </SplitItem>
-          </Split>
+          <Card>
+            <CardBody>
+              <Split gutter=true>
+                <SplitItem>
+                  <yew_icons::Icon data={yew_icons::IconData::LUCIDE_HEART_HANDSHAKE} />
+                </SplitItem>
+                <SplitItem fill=true>
+                  <DescriptionGroup term="Contract Agreement">
+                    <div class="pf-v6-u-font-weight-bold">
+                      { format!("Signed {}", &created_date) }
+                    </div>
+                    <div class="pf-v6-u-font-family-monospace pf-v6-u-text-color-disabled">
+                      { contract_agreement_id.clone() }
+                    </div>
+                  </DescriptionGroup>
+                </SplitItem>
+                <SplitItem>
+                  <ContractAgreementReference
+                    contract_agreement_id={contract_agreement_id.clone()}
+                  />
+                </SplitItem>
+              </Split>
+            </CardBody>
+          </Card>
         )
       })
       .unwrap_or_default();
@@ -208,11 +216,7 @@ pub fn ShowContractNegotiationPageInner(props: &ShowContractNegotiationPageProps
                         </CardBody>
                       </Card>
                     </FlexItem>
-                    <FlexItem>
-                      <Card>
-                        <CardBody>{ contract_agreement }</CardBody>
-                      </Card>
-                    </FlexItem>
+                    <FlexItem>{ contract_agreement }</FlexItem>
                   </Flex>
                 </CardBody>
               </Card>
