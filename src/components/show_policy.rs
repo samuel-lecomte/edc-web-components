@@ -27,13 +27,19 @@ pub fn ShowPolicy(props: &ShowPolicyProps) -> Html {
   let id = if props.hide_id {
     html!()
   } else {
-    html!(<DescriptionGroup term="Id">{ props.policy.id() }</DescriptionGroup>)
+    html!(
+      <DescriptionGroup term="Id">
+        <div class="pf-v6-u-font-family-monospace">{ props.policy.id() }</div>
+      </DescriptionGroup>
+    )
   };
 
-  let name = if props.hide_name {
-    html!()
+  let name = if !props.hide_name
+    && let Some(value) = props.name.clone()
+  {
+    html!(<DescriptionGroup term="Name">{ value }</DescriptionGroup>)
   } else {
-    html!(<DescriptionGroup term="Name">{ props.name.clone() }</DescriptionGroup>)
+    html!()
   };
 
   let kind = if props.hide_kind {

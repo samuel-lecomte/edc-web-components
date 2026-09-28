@@ -119,11 +119,17 @@ pub fn ShowContractAgreementPageInner(props: &ShowContractAgreementPageProps) ->
         <StackItem>
           <Flex modifiers={[FlexModifier::Justify(Justify::Start)]}>
             <FlexItem modifiers={[FlexModifier::Flex1, FlexModifier::Align(Alignment::Start)]}>
-              <Title level={Level::H4} size={Size::XLarge}>{ "Contract Properties" }</Title>
+              <div class="pf-v6-u-mb-md">
+                <Title level={Level::H4} size={Size::XLarge}>{ "Contract Properties" }</Title>
+              </div>
               <Card>
                 <CardBody>
                   <DescriptionList mode={[DescriptionListMode::Horizontal]}>
-                    <DescriptionGroup term="Id">{ contract_agreement_item.id }</DescriptionGroup>
+                    <DescriptionGroup term="Id">
+                      <div class="pf-v6-u-font-family-monospace">
+                        { contract_agreement_item.id }
+                      </div>
+                    </DescriptionGroup>
                     <DescriptionGroup term="Contract Signing Date">
                       { contract_agreement_item.signing_date }
                     </DescriptionGroup>
@@ -138,7 +144,9 @@ pub fn ShowContractAgreementPageInner(props: &ShowContractAgreementPageProps) ->
               </Card>
             </FlexItem>
             <FlexItem modifiers={[FlexModifier::Flex1, FlexModifier::Align(Alignment::Start)]}>
-              <Title level={Level::H4} size={Size::XLarge}>{ "Policy" }</Title>
+              <div class="pf-v6-u-mb-md">
+                <Title level={Level::H4} size={Size::XLarge}>{ "Policy" }</Title>
+              </div>
               <Card>
                 <CardBody>
                   <ShowPolicy policy={contract_agreement_item.policy} />
@@ -146,7 +154,9 @@ pub fn ShowContractAgreementPageInner(props: &ShowContractAgreementPageProps) ->
               </Card>
             </FlexItem>
             <FlexItem modifiers={[FlexModifier::Flex1, FlexModifier::Align(Alignment::Start)]}>
-              <Title level={Level::H4} size={Size::XLarge}>{ "Asset" }</Title>
+              <div class="pf-v6-u-mb-md">
+                <Title level={Level::H4} size={Size::XLarge}>{ "Asset" }</Title>
+              </div>
               { asset }
             </FlexItem>
           </Flex>

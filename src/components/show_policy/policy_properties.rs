@@ -17,7 +17,11 @@ pub struct PolicyPropertiesProps {
 #[component]
 pub fn PolicyProperties(props: &PolicyPropertiesProps) -> Html {
   let permissions = if props.permissions.is_empty() {
-    None
+    Some(html_nested!(
+      <DescriptionGroup term="Permissions">
+        <div class="pf-v6-u-text-color-disabled">{ "None" }</div>
+      </DescriptionGroup>
+    ))
   } else {
     let permissions = props.permissions.iter().map(|permission| {
       html! {
@@ -32,7 +36,11 @@ pub fn PolicyProperties(props: &PolicyPropertiesProps) -> Html {
   };
 
   let obligations = if props.obligations.is_empty() {
-    None
+    Some(html_nested!(
+      <DescriptionGroup term="Obligations">
+        <div class="pf-v6-u-text-color-disabled">{ "None" }</div>
+      </DescriptionGroup>
+    ))
   } else {
     let obligations = props.obligations.iter().map(|obligation| {
       html! {
@@ -47,7 +55,11 @@ pub fn PolicyProperties(props: &PolicyPropertiesProps) -> Html {
   };
 
   let prohibitions = if props.prohibitions.is_empty() {
-    None
+    Some(html_nested!(
+      <DescriptionGroup term="Prohibitions">
+        <div class="pf-v6-u-text-color-disabled">{ "None" }</div>
+      </DescriptionGroup>
+    ))
   } else {
     let prohibitions = props.prohibitions.iter().map(|prohibition| {
       html! {
@@ -67,7 +79,12 @@ pub fn PolicyProperties(props: &PolicyPropertiesProps) -> Html {
     None
   } else {
     let extensible_properties = props.extensible_properties.iter().map(|(key, value)| {
-      html! { <DescriptionGroup term={key.clone()}>{ value.to_string() }</DescriptionGroup> }
+      html! {
+        <>
+          <div class="pf-v6-u-font-family-monospace">{ key.clone() }</div>
+          <div>{ value.to_string() }</div>
+        </>
+      }
     });
 
     Some(html_nested!(
